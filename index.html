@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ZOKIR UC SHOP</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Exo+2:wght@400;500;600;700&display=swap');
+
+  :root {
+    --gold: #FFD700;
+    --orange: #FF6B00;
+    --dark: #0a0c10;
+    --card: #12151c;
+    --card2: #1a1f2e;
+    --border: #2a3040;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --green: #22c55e;
+    --red: #ef4444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Exo 2', sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #0d1117 0%, #1a0a00 100%);
+    padding: 16px;
+    text-align: center;
+    border-bottom: 2px solid var(--orange);
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at center, rgba(255,107,0,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-logo {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-shadow: 0 0 20px rgba(255,215,0,0.4);
+  }
+  .header-sub {
+    font-size: 11px;
+    color: var(--orange);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* STEPS */
+  .steps {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 16px;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .step.active { color: var(--gold); }
+  .step.done { color: var(--green); }
+  .step-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+    background: var(--border);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .step.active .step-num { background: var(--gold); color: #000; border-color: var(--gold); }
+  .step.done .step-num { background: var(--green); color: #fff; border-color: var(--green); }
+  .step-divider { width: 20px; height: 1px; background: var(--border); }
+
+  /* PAGES */
+  .page { display: none; padding: 16px; animation: fadeIn 0.3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  /* ID INPUT */
+  .id-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .id-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+  .id-input-wrap {
+    position: relative;
+  }
+  .id-input {
+    width: 100%;
+    background: var(--dark);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 44px 12px 14px;
+    font-size: 16px;
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.2s;
+    letter-spacing: 1px;
+  }
+  .id-input:focus { border-color: var(--orange); }
+  .id-input::placeholder { color: var(--muted); font-weight: 400; font-size: 14px; }
+  .id-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+  }
+  .id-hint {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* GAME SELECT */
+  .game-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #1a2040, #2a1500);
+    border: 1px solid var(--orange);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  /* UC PACKAGES */
+  .packages-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .pkg-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .pkg-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--orange), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .pkg-card.selected {
+    border-color: var(--gold);
+    background: linear-gradient(135deg, #1a1500, #1a0800);
+    box-shadow: 0 0 16px rgba(255,215,0,0.15);
+  }
+  .pkg-card.selected::before { opacity: 1; }
+  .pkg-uc {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .pkg-uc span { font-size: 13px; color: var(--muted); font-family: 'Exo 2', sans-serif; font-weight: 400; }
+  .pkg-price {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-top: 6px;
+  }
+  .pkg-price-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+  .pkg-check {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--gold);
+    display: none;
+    align-items: center; justify-content: center;
+    font-size: 10px;
+  }
+  .pkg-card.selected .pkg-check { display: flex; }
+
+  /* PAYMENT METHODS */
+  .pay-methods {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .pay-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .pay-card.selected { border-color: var(--green); background: rgba(34,197,94,0.08); }
+  .pay-icon { font-size: 24px; margin-bottom: 4px; }
+  .pay-name { font-size: 13px; font-weight: 600; }
+  .pay-card.selected .pay-name { color: var(--green); }
+
+  /* ORDER SUMMARY */
+  .summary-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-row .label { color: var(--muted); }
+  .summary-row .value { font-weight: 600; }
+  .summary-total .label { font-size: 15px; color: var(--text); font-weight: 600; }
+  .summary-total .value { font-size: 18px; color: var(--gold); font-family: 'Rajdhani', sans-serif; font-weight: 700; }
+
+  /* PAYMENT INFO */
+  .pay-info-card {
+    background: linear-gradient(135deg, #0d1a0d, #111);
+    border: 1px solid #1a3a1a;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .pay-info-title {
+    font-size: 13px;
+    color: var(--green);
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .pay-info-step {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+  .pay-info-step-num {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--green);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .card-number-box {
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 8px 0;
+    cursor: pointer;
+  }
+  .card-number { font-family: 'Rajdhani', sans-serif; font-size: 18px; letter-spacing: 2px; color: var(--gold); }
+  .copy-btn { font-size: 11px; color: var(--orange); font-weight: 600; }
+
+  /* SCREENSHOT UPLOAD */
+  .upload-area {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .upload-area:active { border-color: var(--orange); background: rgba(255,107,0,0.05); }
+  .upload-icon { font-size: 32px; margin-bottom: 8px; }
+  .upload-text { font-size: 13px; color: var(--muted); }
+  .upload-text strong { color: var(--orange); }
+  #screenshot-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .screenshot-preview {
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    display: none;
+  }
+  .screenshot-preview img { width: 100%; border-radius: 10px; }
+
+  /* BUTTONS */
+  .btn-main {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: linear-gradient(135deg, var(--orange), #ff9500);
+    color: #000;
+    text-transform: uppercase;
+  }
+  .btn-main:active { transform: scale(0.98); opacity: 0.9; }
+  .btn-main:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-main.green { background: linear-gradient(135deg, #16a34a, #22c55e); color: #fff; }
+  .btn-back {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* SUCCESS */
+  .success-wrap {
+    text-align: center;
+    padding: 32px 16px;
+  }
+  .success-icon { font-size: 64px; margin-bottom: 16px; animation: pop 0.5s ease; }
+  @keyframes pop { 0% { transform: scale(0); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
+  .success-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+  .success-text { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .order-id-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin: 20px 0;
+  }
+  .order-id-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .order-id-val { font-family: 'Rajdhani', sans-serif; font-size: 20px; color: var(--gold); letter-spacing: 2px; }
+
+  /* ALERT */
+  .alert {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    margin-bottom: 12px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .alert.warning { background: rgba(255,107,0,0.1); border: 1px solid rgba(255,107,0,0.3); color: #ffa040; }
+  .alert.info { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); color: #60a5fa; }
+
+  .spacer { height: 80px; }
+  .bottom-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    padding: 12px 16px;
+    background: linear-gradient(to top, var(--dark) 80%, transparent);
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">⚡ ZOKIR UC SHOP</div>
+  <div class="header-sub">PUBG Mobile UC xizmati</div>
+</div>
+
+<div class="steps">
+  <div class="step active" id="step1">
+    <div class="step-num">1</div>
+    <span>ID</span>
+  </div>
+  <div class="step-divider"></div>
+  <div class="step" id="step2">
+    <div class="step-num">2</div>
+    <span>UC</span>
+  </div>
+  <div class="step-divider"></div>
+  <div class="step" id="step3">
+    <div class="step-num">3</div>
+    <span>To'lov</span>
+  </div>
+  <div class="step-divider"></div>
+  <div class="step" id="step4">
+    <div class="step-num">4</div>
+    <span>Tasdiqlash</span>
+  </div>
+</div>
+
+<!-- PAGE 1: ID -->
+<div class="page active" id="page1">
+  <div style="margin-bottom:16px">
+    <div class="section-title">O'yin ma'lumotlari</div>
+
+    <div class="game-badge">
+      🎮 PUBG Mobile Global
+    </div>
+
+    <div class="id-card">
+      <div class="id-label">PUBG MOBILE ID raqamingiz</div>
+      <div class="id-input-wrap">
+        <input class="id-input" type="number" id="pubgId" placeholder="Masalan: 5123456789" maxlength="12">
+        <span class="id-icon">🎯</span>
+      </div>
+      <div class="id-hint">
+        <span>ℹ️</span>
+        <span>IDni topish: O'yinda Profil → nusxa olish belgisi</span>
+      </div>
+    </div>
+
+    <div class="alert info">
+      <span>💡</span>
+      <span>ID noto'g'ri kiritilsa UC boshqa o'yinchiga tushib ketadi. Diqqat bilan kiriting!</span>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <div class="bottom-bar">
+    <button class="btn-main" onclick="goToPage2()">Davom etish →</button>
+  </div>
+</div>
+
+<!-- PAGE 2: UC PACKAGE -->
+<div class="page" id="page2">
+  <button class="btn-back" onclick="goBack(1)">← Orqaga</button>
+  <div class="section-title">UC paketini tanlang</div>
+
+  <div class="packages-grid">
+    <div class="pkg-card" onclick="selectPkg(this, 60, 12000)">
+      <div class="pkg-uc">60 <span>UC</span></div>
+      <div class="pkg-price">12,000 so'm</div>
+      <div class="pkg-price-sub">≈ 85 ₽</div>
+      <div class="pkg-check">✓</div>
+    </div>
+    <div class="pkg-card" onclick="selectPkg(this, 325, 57000)">
+      <div class="pkg-uc">325 <span>UC</span></div>
+      <div class="pkg-price">57,000 so'm</div>
+      <div class="pkg-price-sub">≈ 400 ₽</div>
+      <div class="pkg-check">✓</div>
+    </div>
+    <div class="pkg-card" onclick="selectPkg(this, 660, 112000)">
+      <div class="pkg-uc">660 <span>UC</span></div>
+      <div class="pkg-price">112,000 so'm</div>
+      <div class="pkg-price-sub">≈ 785 ₽</div>
+      <div class="pkg-check">✓</div>
+    </div>
+    <div class="pkg-card" onclick="selectPkg(this, 1800, 280000)">
+      <div class="pkg-uc">1800 <span>UC</span></div>
+      <div class="pkg-price">280,000 so'm</div>
+      <div class="pkg-price-sub">≈ 1,930 ₽</div>
+      <div class="pkg-check">✓</div>
+    </div>
+    <div class="pkg-card" style="grid-column: 1/-1;" onclick="selectPkg(this, 3850, 550000)">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div class="pkg-uc">3850 <span>UC</span></div>
+          <div class="pkg-price">550,000 so'm</div>
+          <div class="pkg-price-sub">≈ 3,800 ₽</div>
+        </div>
+        <div style="font-size:28px;">👑</div>
+      </div>
+      <div class="pkg-check">✓</div>
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+  <div class="bottom-bar">
+    <button class="btn-main" id="btn-pkg" disabled onclick="goToPage3()">Davom etish →</button>
+  </div>
+</div>
+
+<!-- PAGE 3: PAYMENT -->
+<div class="page" id="page3">
+  <button class="btn-back" onclick="goBack(2)">← Orqaga</button>
+  <div class="section-title">To'lov usuli</div>
+
+  <div class="pay-methods">
+    <div class="pay-card" onclick="selectPay(this, 'Click')">
+      <div class="pay-icon">🔵</div>
+      <div class="pay-name">Click</div>
+    </div>
+    <div class="pay-card" onclick="selectPay(this, 'Payme')">
+      <div class="pay-icon">🟢</div>
+      <div class="pay-name">Payme</div>
+    </div>
+    <div class="pay-card" onclick="selectPay(this, 'Karta')">
+      <div class="pay-icon">💳</div>
+      <div class="pay-name">Karta</div>
+    </div>
+    <div class="pay-card" onclick="selectPay(this, 'Naqd')">
+      <div class="pay-icon">💵</div>
+      <div class="pay-name">Naqd pul</div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary-card">
+    <div class="section-title" style="margin-bottom:8px">Buyurtma</div>
+    <div class="summary-row">
+      <span class="label">PUBG ID</span>
+      <span class="value" id="sum-id">—</span>
+    </div>
+    <div class="summary-row">
+      <span class="label">UC miqdori</span>
+      <span class="value" id="sum-uc">—</span>
+    </div>
+    <div class="summary-row">
+      <span class="label">To'lov usuli</span>
+      <span class="value" id="sum-pay">—</span>
+    </div>
+    <div class="summary-row summary-total">
+      <span class="label">Jami</span>
+      <span class="value" id="sum-price">—</span>
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+  <div class="bottom-bar">
+    <button class="btn-main" id="btn-pay" disabled onclick="goToPage4()">To'lovga o'tish →</button>
+  </div>
+</div>
+
+<!-- PAGE 4: PAY & CONFIRM -->
+<div class="page" id="page4">
+  <button class="btn-back" onclick="goBack(3)">← Orqaga</button>
+  <div class="section-title">To'lovni amalga oshiring</div>
+
+  <div class="pay-info-card">
+    <div class="pay-info-title">📋 To'lov yo'riqnomasi</div>
+    <div class="pay-info-step">
+      <div class="pay-info-step-num">1</div>
+      <div>Quyidagi karta raqamiga <strong id="amount-show" style="color:var(--gold)"></strong> o'tkazing</div>
+    </div>
+    <div class="card-number-box" onclick="copyCard()">
+      <div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">🏦 Uzcard</div>
+        <div class="card-number">9860 1766 2133 1774</div>
+        <div style="font-size:12px;color:var(--gold);margin-top:5px;letter-spacing:1px;font-weight:600;">ZOKIRJON M.</div>
+      </div>
+      <div class="copy-btn" id="copy-label">📋 Nusxa</div>
+    </div>
+    <div class="pay-info-step">
+      <div class="pay-info-step-num">2</div>
+      <div>To'lov chekini (screenshot) pastga yuklang</div>
+    </div>
+    <div class="pay-info-step">
+      <div class="pay-info-step-num">3</div>
+      <div>"Tasdiqlash" tugmasini bosing — 5-15 daqiqa ichida UC tushadi</div>
+    </div>
+  </div>
+
+  <div class="alert warning">
+    <span>⚠️</span>
+    <span>To'lov cheki bo'lmasdan buyurtma tasdiqlanmaydi!</span>
+  </div>
+
+  <div class="screenshot-preview" id="preview-wrap">
+    <img id="preview-img" src="" alt="Chek">
+  </div>
+
+  <div class="upload-area" id="upload-area">
+    <input type="file" id="screenshot-input" accept="image/*" onchange="handleFile(this)">
+    <div class="upload-icon">📸</div>
+    <div class="upload-text">To'lov chekini yuklang<br><strong>Rasmni tanlash uchun bosing</strong></div>
+  </div>
+
+  <div class="spacer"></div>
+  <div class="bottom-bar">
+    <button class="btn-main green" id="btn-confirm" onclick="submitOrder()">✅ Buyurtmani Tasdiqlash</button>
+  </div>
+</div>
+
+<!-- PAGE 5: SUCCESS -->
+<div class="page" id="page5">
+  <div class="success-wrap">
+    <div class="success-icon">🎉</div>
+    <div class="success-title">Buyurtma qabul qilindi!</div>
+    <div class="success-text">Adminimiz buyurtmangizni ko'rib chiqmoqda.<br>5-15 daqiqa ichida UC hisobingizga tushadi.</div>
+
+    <div class="order-id-box">
+      <div class="order-id-label">Buyurtma raqami</div>
+      <div class="order-id-val" id="order-num">—</div>
+    </div>
+
+    <div class="summary-card" style="text-align:left">
+      <div class="summary-row">
+        <span class="label">PUBG ID</span>
+        <span class="value" id="fin-id">—</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">UC</span>
+        <span class="value" id="fin-uc">—</span>
+      </div>
+      <div class="summary-row summary-total">
+        <span class="label">To'langan</span>
+        <span class="value" id="fin-price">—</span>
+      </div>
+    </div>
+
+    <div class="alert info">
+      <span>📞</span>
+      <span>Muammo bo'lsa: <strong>@ZOKIRUC</strong> ga murojaat qiling</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Telegram WebApp init
+  const tg = window.Telegram?.WebApp;
+  if (tg) {
+    tg.ready();
+    tg.expand();
+  }
+
+  let state = { pubgId: '', uc: 0, price: 0, payMethod: '', screenshotData: null };
+
+  function goToPage2() {
+    const id = document.getElementById('pubgId').value.trim();
+    if (!id || id.length < 8) {
+      alert('PUBG ID kamida 8 ta raqam bo\'lishi kerak!');
+      return;
+    }
+    state.pubgId = id;
+    setStep(2);
+    showPage(2);
+    document.getElementById('sum-id').textContent = id;
+  }
+
+  function goBack(page) {
+    setStep(page);
+    showPage(page);
+  }
+
+  function goToPage3() {
+    setStep(3);
+    showPage(3);
+    document.getElementById('sum-id').textContent = state.pubgId;
+    document.getElementById('sum-uc').textContent = state.uc + ' UC';
+    document.getElementById('sum-price').textContent = formatPrice(state.price);
+  }
+
+  function goToPage4() {
+    setStep(4);
+    showPage(4);
+    document.getElementById('amount-show').textContent = formatPrice(state.price);
+  }
+
+  function showPage(n) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page' + n).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function setStep(n) {
+    for (let i = 1; i <= 4; i++) {
+      const el = document.getElementById('step' + i);
+      el.classList.remove('active', 'done');
+      if (i < n) el.classList.add('done');
+      else if (i === n) el.classList.add('active');
+    }
+  }
+
+  function selectPkg(el, uc, price) {
+    document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    state.uc = uc;
+    state.price = price;
+    document.getElementById('btn-pkg').disabled = false;
+  }
+
+  function selectPay(el, method) {
+    document.querySelectorAll('.pay-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    state.payMethod = method;
+    document.getElementById('sum-pay').textContent = method;
+    document.getElementById('btn-pay').disabled = false;
+  }
+
+  function formatPrice(p) {
+    return p.toLocaleString('uz-UZ') + ' so\'m';
+  }
+
+  function copyCard() {
+    navigator.clipboard?.writeText('9860176621331774').then(() => {
+      document.getElementById('copy-label').textContent = '✅ Nusxalandi';
+      setTimeout(() => { document.getElementById('copy-label').textContent = '📋 Nusxa'; }, 2000);
+    });
+  }
+
+  function handleFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      state.screenshotData = e.target.result;
+      document.getElementById('preview-img').src = e.target.result;
+      document.getElementById('preview-wrap').style.display = 'block';
+      document.getElementById('upload-area').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function submitOrder() {
+    const orderId = 'ZUC-' + Date.now().toString().slice(-6);
+    document.getElementById('order-num').textContent = orderId;
+    document.getElementById('fin-id').textContent = state.pubgId;
+    document.getElementById('fin-uc').textContent = state.uc + ' UC';
+    document.getElementById('fin-price').textContent = formatPrice(state.price);
+
+    const BOT_TOKEN = '8685605528:AAFeSHDfaKTUsOKyX7NpIg5uo0VPWvoSdrQ';
+    const ADMIN_ID = '6044968804';
+    const msg = `🛒 YANGI BUYURTMA!\n━━━━━━━━━━━━━━\n🆔 Buyurtma: ${orderId}\n👤 PUBG ID: ${state.pubgId}\n⚡ UC: ${state.uc} UC\n💰 Narx: ${formatPrice(state.price)}\n💳 To\'lov: ${state.payMethod}\n━━━━━━━━━━━━━━\n✅ Tasdiqlang va UC yuboring!`;
+
+    try {
+      await fetch('https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: ADMIN_ID, text: msg })
+      });
+    } catch(e) {
+      console.log('Xabar yuborishda xato:', e);
+    }
+
+    showPage(5);
+  }
+</script>
+</body>
+</html>
